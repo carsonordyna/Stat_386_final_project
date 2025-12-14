@@ -1,22 +1,27 @@
 import pandas as pd
 import re
 import numpy as np
+from datetime import datetime
+
 
 def check_is_nan(value):
+    """Check if value is NaN or empty."""
     if pd.isnull(value) or value == "":
-        return np.nan
+        return True
+    return False
+
 
 def clean_price(price_str):
     """
     Cleaning the price to display as a numeric value instead of string.
 
     Args:
-        price_str: str
-            string representation of the price
+        price_str: str - string representation of the price
     Returns:
-        Float: Numerical value of the price
+        float: Numerical value of the price
     """
-    check_is_nan(price_str)
+    if check_is_nan(price_str):
+        return np.nan
 
     clean = re.sub(r'[$,\s]', '', str(price_str))
     try:
@@ -24,55 +29,62 @@ def clean_price(price_str):
     except:
         return np.nan
 
+
 def clean_numeric_field(value):
     """
-    convert other numeric string fields to numeric values
+    Convert other numeric string fields to numeric values
 
     Args:
         value (str): string value of the field
 
-    returns:
+    Returns:
         float: numeric value of the field or NaN if invalid
     """
-    check_is_nan(value)
-    cleaned = re.sub(r'[$,\s]', '', str(value))
+    if check_is_nan(value):
+        return np.nan
+
+    cleaned = re.sub(r'[,\s]', '', str(value))
     try:
         return float(cleaned)
     except ValueError:
         return np.nan
+
+
 def clean_year_built(year_built):
     """
-    Validate and clean the year build column
+    Validate and clean the year built column
 
     Args:
-        year_str: String representation of the year built
-
+        year_built: String representation of the year built
 
     Returns:
-        Int: valid year built or NaN
+        int: valid year built or NaN
     """
-    check_is_nan(year_built)
+    if check_is_nan(year_built):
+        return np.nan
+
     try:
         year = int(year_built)
-        if year <= 1800 <= year <= current_year +2:
+        current_year = datetime.now().year
+        if 1800 <= year <= current_year + 2:
             return year
-            "This is to verify that it is a reasonable year"
         return np.nan
     except ValueError:
         return np.nan
 
-def clea_lot_size(lot_size_str):
+
+def clean_lot_size(lot_size_str):
     """
-    Clean the lot size field to return numeric value in square feet
+    Clean the lot size field to return numeric value in acres
 
     Args:
-        lot_size_str: str
-            string representation of the lot size
+        lot_size_str: str - string representation of the lot size
 
     Returns:
-        Float: Numeric value of the lot size in square feet
+        float: Numeric value of the lot size in acres
     """
-    check_is_nan(lot_size_str)
+    if check_is_nan(lot_size_str):
+        return np.nan
 
     lot_size_str = str(lot_size_str).lower().strip()
 
@@ -83,13 +95,14 @@ def clea_lot_size(lot_size_str):
     value = float(numbers[0])
 
     if 'ac' in lot_size_str or 'acre' in lot_size_str:
-        return lot_size_str
-    elif 'sq' in lot_size_str or 'ft' in lot_size_str:
-        "an acre is 4350"
-        return value /43560
-    else:
         return value
-        "We're assuming acres if there is not unit specified"
+    elif 'sq' in lot_size_str or 'ft' in lot_size_str:
+        # An acre is 43,560 sq ft
+        return value / 43560
+    else:
+        # Assume acres if no unit specified
+        return value
+
 
 def clean_garage(garage_str):
     """
@@ -101,16 +114,14 @@ def clean_garage(garage_str):
     Returns:
         int: number of garages or 0 if none/invalid
     """
-    check_is_nan(garage_str)
+    if check_is_nan(garage_str):
+        return 0
 
     numbers = re.findall(r'\d+', str(garage_str))
     if numbers:
         return int(numbers[0])
     return 0
 
-def remove_agent(agent_str):
-    pd.drop(columns=[agent_str], inplace=True)
-    return pd
 
 def clean_address(address_str):
     """
@@ -122,7 +133,8 @@ def clean_address(address_str):
     Returns:
         str: cleaned address string
     """
-    check_is_nan(address_str)
+    if check_is_nan(address_str):
+        return np.nan
 
     cleaned = re.sub(r'\s+', ' ', str(address_str)).strip()
     cleaned = re.sub(r',\s*,', ',', cleaned)
@@ -132,54 +144,84 @@ def clean_address(address_str):
 
 
 def clean_city(city_str):
-    check_is_nan(city_str)
-    return city_str.lower().strip()
+    """
+    Clean and standardize city names
+
+    Args:
+        city_str: String representation of the city
+
+    Returns:
+        str: cleaned city string
+    """
+    if check_is_nan(city_str):
+        return np.nan
+    return str(city_str).lower().strip()
+
 
 def clean_housing_data(df):
     """
-    Applying all the clenaing functions to the dataframe
+    Apply all cleaning functions to the dataframe
 
     Args:
         df: pandas DataFrame with the raw housing data
 
     Returns:
-        Pandas DataFrame with cleaned data
+        pandas DataFrame with cleaned data
     """
-
     df_clean = df.copy()
+
+    # Drop agent column if it exists
     if 'agent' in df_clean.columns:
-        df_clean = remove_agent(df_clean)
+        df_clean = df_clean.drop(columns=['agent'])
+
+    # Clean numeric fields
     if 'price' in df_clean.columns:
         df_clean['price'] = df_clean['price'].apply(clean_price)
+
+    if 'beds' in df_clean.columns:
+        df_clean['beds'] = df_clean['beds'].apply(clean_numeric_field)
+
+    if 'baths' in df_clean.columns:
+        df_clean['baths'] = df_clean['baths'].apply(clean_numeric_field)
+
+    if 'sqft' in df_clean.columns:
+        df_clean['sqft'] = df_clean['sqft'].apply(clean_numeric_field)
+
     if 'year_built' in df_clean.columns:
         df_clean['year_built'] = df_clean['year_built'].apply(clean_year_built)
+
     if 'lot_size' in df_clean.columns:
-        df_clean['lot_size'] = df_clean['lot_size'].apply(clea_lot_size)
+        df_clean['lot_size'] = df_clean['lot_size'].apply(clean_lot_size)
+
     if 'garage' in df_clean.columns:
         df_clean['garage'] = df_clean['garage'].apply(clean_garage)
+
     if 'address' in df_clean.columns:
         df_clean['address'] = df_clean['address'].apply(clean_address)
+
     if 'city' in df_clean.columns:
         df_clean['city'] = df_clean['city'].apply(clean_city)
+
     return df_clean
 
-def remove_duplicates(df, subset=['mls_number']):
+
+def remove_duplicates(df, subset=['mls']):
     """
     Remove duplicate entries from the dataframe using the MLS number as the unique identifier
 
     Args:
         df: Pandas DataFrame with housing data
+        subset: List of columns to check for duplicates
 
     Returns:
-        Pandas DataFrame: DataFrame with duplicates removed
+        pandas DataFrame: DataFrame with duplicates removed
     """
-
     return df.drop_duplicates(subset=subset, keep='first')
+
 
 def remove_invalid_entries(df):
     """
     Remove rows with critical missing data
-
 
     Args:
         df: Pandas DataFrame with housing data
@@ -187,30 +229,30 @@ def remove_invalid_entries(df):
     Returns:
         pandas DataFrame: DataFrame with invalid entries removed
     """
-
-    critical_fields = ['mls','price','address']
+    critical_fields = ['mls', 'price', 'address']
 
     for field in critical_fields:
-        df = df[df[field].notna()]
-        if field == 'price':
-            df = df[df['price'] > 0]
+        if field in df.columns:
+            df = df[df[field].notna()]
+            if field == 'price':
+                df = df[df['price'] > 0]
+
     return df
+
 
 def get_cleaned_data(max_listings=5, cities=None, output='pandas'):
     """
-    Get housing data and do cleaning automatically
-
+    Get housing data and apply cleaning automatically
 
     Args:
-        max_listings (int) Maximum number of listings to fetch
-        cities List of cities to fetch to scrape (None = all cities)
-        output = pandas or csv
-
+        max_listings (int): Maximum number of listings to fetch per city
+        cities (list): List of cities to scrape (None = all cities)
+        output (str): 'pandas' or 'csv'
 
     Returns:
-        Pandas or CSV DataFrame: Cleaned housing data
+        pandas DataFrame or str: Cleaned housing data or path to saved CSV
     """
-    from utah_housing_stat286.core import get_data
+    from utah_housing_stat386.core import get_data
 
     df_raw = get_data(max_listings=max_listings, cities=cities, output='pandas')
 
@@ -221,14 +263,8 @@ def get_cleaned_data(max_listings=5, cities=None, output='pandas'):
     if output == 'pandas':
         return df_clean
     elif output == 'csv':
-        df_clean.to_csv("utah_housing_data_cleaned.csv",index=False)
+        df_clean.to_csv("utah_housing_data_cleaned.csv", index=False)
         return "Data saved to utah_housing_data_cleaned.csv"
     else:
         raise ValueError("Invalid output option. Choose 'pandas' or 'csv'.")
-
-
-
-
-
-
 

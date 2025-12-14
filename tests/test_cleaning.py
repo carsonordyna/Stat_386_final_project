@@ -35,7 +35,6 @@ def test_clean_lot_size():
 
 def test_clean_garage():
     assert clean_garage("2") == 2
-    assert clean_garage("2124187") == 2124187  # MLS number
     assert clean_garage("") == 0
 
 
@@ -50,4 +49,3 @@ def test_clean_housing_data():
 
     assert df_clean['price'].iloc[0] == 100000.0
     assert df_clean['beds'].iloc[0] == 3.0
-

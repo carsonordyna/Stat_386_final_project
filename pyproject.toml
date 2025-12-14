@@ -1,17 +1,23 @@
 [build-system]
-requires = ["uv_build >= 0.9.5, <0.10.0"]
-build-backend = "uv_build"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "utah-housing-stat386"
-version = "0.1.0"
+version = "0.2.0"  # Increment version
 description = "A package to scrape Utah housing data for certain cities of Salt Lake and Utah counties"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
+authors = [
+    { name = "Seth Frandsen", email = "your.email@example.com" }
+]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent"
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
 ]
 dependencies = [
     "beautifulsoup4>=4.14.2",
@@ -22,7 +28,19 @@ dependencies = [
     "requests>=2.32.5",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "streamlit>=1.52.1",
+]
+
 [project.urls]
 Homepage = "https://github.com/sethfrand/Stat_386_final_project"
 Repository = "https://github.com/sethfrand/Stat_386_final_project.git"
 Issues = "https://github.com/sethfrand/Stat_386_final_project/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/utah_housing_stat386"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/utah_housing_stat386/data" = "utah_housing_stat386/data"
