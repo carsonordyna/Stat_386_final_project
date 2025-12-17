@@ -8,39 +8,93 @@ The package provides tools to collect data from cities in Utah County and Salt L
 
 ## Installation ##
 *The first things that you will need to do is install the utah_housing_stat386 package.*
-pip install utah-housing-stat386
 
-```bash
-import utah_housing as
+```{bash}
+#| eval: false
+
+pip install utah-housing-stat386
 ```
 After installing, you'll also need to install [playwright](https://playwright.dev/python/docs/intro) browers
 to run the scraping functions.
 
-This package includes a demo datset that you can use so that you can start exploring the data immediately!
 
-```python
-from utah_housing_stat386 import demo_data
+## Read in the data ##
 
-#load the demo dataset
+Using the package's scraping functions `get_data` and `get_cleaned_data` are extremely memory intensive. Unless, dynamically updated data is required, it is highly recommended to use the functions `data_no_scrape` and `cleaned_static_data`, which are used to read in data that has been previously scraped (a process that took several hours). Details for using `get_data` and `get_cleaned_data` may be found on the `Documentation` page.
 
-df = load_demo_data()
+```{python}
+# Import libraries
+import pandas as pd
+import numpy as np
+from utah_housing_stat386.cleaning import data_no_scape, cleaned_static_data
 
-#Display the basic information of the dataset
-
-print(f"Dataset Shape: {df.shape}")
-print(f"\nDataset Columns: {df.columns}")
-print(f"\nDataset Description: \n{df.describe()}")
-print(f"\nFirst few rows: \n{df.head()}")
+# Read in the raw, previously scraped data
+df_raw = data_no_scape()
+df_raw.head(10)
+```
+```{python}
+# Read in the clean, previously scraped data
+df_clean = cleaned_static_data()
+df_clean.head(10)
 ```
 
-## Understanding the Data ##
-To understand the datatypes that we can, you can run
 
-```python
-print("Data Types:"
-print(df.dtypes())
+## Cleaning the data ##
 
-print("\nSummary Statistics:")
-df.describe()
+If the data was scraped, the following cleaning functions may be used to clean it. For time and simplicity, the following example usage of these functions will be used with raw, previously scraped (i.e. static) data, `df_raw`.
 
+Cleaning the data step-by-step, function-by-function:
+```{python}
+from utah_housing_stat386.cleaning import clean_price, clean_numeric_field, clean_year_built, clean_lot_size, clean_garage, clean_address, clean_city
+
+# Apply cleaning step-by-step
+df_clean1 = df_raw.copy()
+df_clean1.drop(columns=['agent'])
+df_clean1['price'] = df_clean1['price'].apply(clean_price)
+df_clean1['beds'] = df_clean1['beds'].apply(clean_numeric_field)
+df_clean1['baths'] = df_clean1['baths'].apply(clean_numeric_field)
+df_clean1['sqft'] = df_clean1['sqft'].apply(clean_numeric_field)
+df_clean1['year_built'] = df_clean1['year_built'].apply(clean_year_built)
+df_clean1['lot_size'] = df_clean1['lot_size'].apply(clean_lot_size)
+df_clean1['garage'] = df_clean1['garage'].apply(clean_garage)
+df_clean1['address'] = df_clean1['address'].apply(clean_address)
+df_clean1['city'] = df_clean1['city'].apply(clean_city)
+
+df_clean1.head(10)
 ```
+
+Cleaning the data with `clean_housing_data`, which applies all cleaning functions to the DataFrame:
+
+```{python}
+from utah_housing_stat386.cleaning import clean_housing_data, remove_duplicates, remove_invalid_entries
+
+# Apply cleaning in consolidated steps
+df_clean2 = clean_housing_data(df_raw)
+df_clean2 = remove_duplicates(df_clean2)
+df_clean2 = remove_invalid_entries(df_clean2)
+
+df_clean2.head(10)
+```
+
+
+## Analysis ##
+```{python}
+import re
+
+df = df_clean2.copy()
+
+# Extract zipcodes
+address_list = df['address'].tolist()
+pattern = r"UT \d{5}"
+zipcode_list = []
+for address in address_list:
+    zipcode_list.append(re.search(pattern, address).group()[3:])
+df['zipcode'] = zipcode_list
+df = df.drop(columns=['address', 'mls'])
+
+df
+```
+
+
+
+

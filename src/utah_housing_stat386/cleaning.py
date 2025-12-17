@@ -119,7 +119,10 @@ def clean_garage(garage_str):
 
     numbers = re.findall(r'\d+', str(garage_str))
     if numbers:
-        return int(numbers[0])
+        if int(numbers[0]) <= 15:
+            return int(numbers[0])
+        else:
+            return 0
     return 0
 
 
@@ -276,8 +279,10 @@ def data_no_scape():
     Returns:
         pandas DataFrame
     """
-    df1 = pd.read_csv("../../data/utah_housing_data_ORIGINAL.csv")
-    df2 = pd.read_csv("../../data/Salt_Lake_County_housing_data.csv")
+    #df1 = pd.read_csv("../../data/utah_housing_data_ORIGINAL.csv")
+    #df2 = pd.read_csv("../../data/Salt_Lake_County_housing_data.csv")
+    df1 = pd.read_csv('https://raw.githubusercontent.com/carsonordyna/Stat_386_final_project/refs/heads/main/data/utah_housing_data_ORIGINAL.csv')
+    df2 = pd.read_csv('https://raw.githubusercontent.com/carsonordyna/Stat_386_final_project/refs/heads/main/data/Salt_Lake_County_housing_data.csv')
 
     return pd.concat([df1, df2])
 
@@ -296,9 +301,7 @@ def cleaned_static_data():
     """
     from utah_housing_stat386.core import get_data
 
-    df1 = pd.read_csv("../../data/utah_housing_data_ORIGINAL.csv")
-    df2 = pd.read_csv("../../data/Salt_Lake_County_housing_data.csv")
-    df_raw = pd.concat([df1, df2])
+    df_raw = data_no_scape()
 
     df_clean = clean_housing_data(df_raw)
     df_clean = remove_invalid_entries(df_clean)

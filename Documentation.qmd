@@ -29,54 +29,6 @@ The package's web scraper uses **Playwright** for browser automation and easy in
 
 ***
 
-## **Project Structure**
-
-    Stat_386_final_project/
-    ├── LICENSE
-    ├── README.md
-    ├── Documentation.qmd
-    ├── Tutorial.qmd
-    ├── TechnicalReport.qmd
-    ├── index.qmd
-    ├── pyproject.toml
-    ├── streamlit_page.py
-    ├── styles.css
-    ├── uv.lock
-    ├── data/
-    │   ├── Salt_Lake_County_housing_data.csv
-    │   ├── test_data.csv
-    │   └── utah_housing_data_ORIGINAL.csv
-    ├── scripts/
-    │   ├── _scraper_less_intensive.py
-    │   ├── salt_lake_county.py
-    │   └── scraper.py
-    ├── src/
-    │   └── utah_housing_stat386/
-    │       ├── __init__.py
-    │       ├── core.py
-    │       ├── cleaning.py
-    │       ├── demo.py
-    │       └── data/
-    ├── tests/
-    │   ├── package_test.py
-    │   ├── test_cleaning.py
-    │   └── test.ipynb
-    └── docs/
-        └── (generated Quarto HTML files)
-
-***
-
-## **Package**
-
-The main package is `utah_housing_stat386`, located in the `src/utah_housing_stat386/` directory. It contains the core functionality for scraping, cleaning, and data handling.
-
-*   `core.py`: Contains the main scraping logic and data fetching functions
-*   `cleaning.py`: Data cleaning and validation functions for housing data
-*   `demo.py`: Demo functions for testing and quick prototyping
-*   `__init__.py`: Initializes the package and exposes all public functions
-
-***
-
 ## **Installation**
 
 1.  **Install Playwright browsers** (required for scraping):
@@ -133,30 +85,6 @@ Supported cities include:
 
 *   **Utah County**: alpine, american-fork, eagle-mountain, highland, lindon, lehi, orem, provo, saratoga-springs, spanish-fork
 *   **Salt Lake County**: draper, holladay, midvale, millcreek, cottonwood-heights, murray, salt-lake-city, sandy, south-jordan, south-salt-lake, sugarhouse, west-jordan, west-valley
-
-***
-
-## **Data Files**
-
-*   `data/utah_housing_data_ORIGINAL.csv`: Sample of scraped data for Utah County
-*   `data/Salt_Lake_County_housing_data.csv`: Sample of scraped data for Salt Lake County
-*   `data/test_data.csv`: Test dataset (produced in development)
-
-## **Scripts (produced in development)**
-
-*  `scripts/scraper.py`: Main scraper script using Playwright
-*  `scripts/_scraper_less_intensive.py`: Less intensive version of the scraper
-*  `scripts/salt_lake_county.py`: Script to scrape Salt Lake County data
-
-## **Other Files & Resources**
-
-*  `pyproject.toml`: Project configuration, dependencies, and package metadata
-*  `uv.lock`: Lock file for reproducible dependency management
-*  `streamlit_page.py`: Interactive Streamlit web interface for data exploration
-*  `Tutorial.qmd`: User guide and tutorial for the package
-*  `TechnicalReport.qmd`: Detailed technical documentation and methodology
-*  `tests/`: Unit tests and integration tests for the package
-*  `docs/`: Pre-built Quarto HTML documentation files
 
 ***
 
