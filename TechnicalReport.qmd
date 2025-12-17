@@ -1,33 +1,494 @@
 ---
 title: "Technical Report"
-description: "Project summary, methodology, and findings placeholder"
+jupyter: python3
 ---
 
-## Executive Summary
-
-_TODO: Provide a concise overview of the project objectives, key findings, and actionable recommendations ._
-
-## Project Context
+## Introduction
 
 _TODO: Describe the motivation, stakeholders, and success criteria for this analysis._
 
-## Data Sources
 
-- _Primary dataset:_ `Salt_Lake_City_Water_Quality_Data.csv and utah_housing_data.csv`
-- _Supplementary data:_ `TODO - describe any external references`
-- _Data access notes:_ `To retrieve this data is quite time consuming. Best to do the demo.`
-
-## Methodology
+## Data Source and Methodology
 
 1. _Data acquisition:_ `TODO - outline collection scripts/APIs`
 2. _Cleaning pipeline:_ `TODO - summarize transformations and validations implemented`
 3. _Analysis workflow:_ `TODO - describe statistical or modeling techniques`
 4. _Tooling:_ `TODO - list packages, environments, and reproducibility steps`
 
-## Results & Diagnostics
 
-_TODO: Summarize the main metrics, charts, or model diagnostics produced. Include links to figures or tables once available._
+## EDA
 
-## Discussion & Next Steps
+```{python}
+#| include: false
+import sys
+sys.path.insert(0, "/Users/cromacair/Desktop/STAT 386/Final Project/Final_Project_Repo/src")
+```
+```{python}
+#| include: false
+import pandas as pd
+from utah_housing_stat386.cleaning import data_no_scape, cleaned_static_data, clean_housing_data, remove_duplicates, remove_invalid_entries
+import re
+
+df_raw = data_no_scape()
+df_clean2 = clean_housing_data(df_raw)
+df_clean2 = remove_duplicates(df_clean2)
+df_clean2 = remove_invalid_entries(df_clean2)
+df = df_clean2.copy()
+address_list = df['address'].tolist()
+pattern = r"UT \d{5}"
+zipcode_list = []
+for address in address_list:
+    zipcode_list.append(re.search(pattern, address).group()[3:])
+df['zipcode'] = zipcode_list
+df = df.drop(columns=['address', 'mls', 'zipcode'])
+```
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Create a 2x2 figure with 4 subplots
+fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+fig.suptitle('EDA: Price vs Selected Variables', fontsize=16, fontweight='bold')
+
+# Plot 1 (top-left): Scatterplot - price vs bedrooms (or sqft, year_built, etc.)
+axes[0, 0].scatter(df['beds'], df['price'], alpha=0.5, s=50, color='steelblue')
+axes[0, 0].set_xlabel('Bedrooms', fontsize=11)
+axes[0, 0].set_ylabel('Price ($)', fontsize=11)
+axes[0, 0].set_title('Price vs Bedrooms', fontweight='bold')
+axes[0, 0].grid(True, alpha=0.3)
+axes[0, 0].set_xlim(0, 10)
+axes[0, 0].set_ylim(0, 3_000_000)
+
+# Plot 2 (top-right): Scatterplot - price vs bathrooms (or sqft, lot_size, etc.)
+axes[0, 1].scatter(df['baths'], df['price'], alpha=0.5, s=50, color='coral')
+axes[0, 1].set_xlabel('Bathrooms', fontsize=11)
+axes[0, 1].set_ylabel('Price ($)', fontsize=11)
+axes[0, 1].set_title('Price vs Bathrooms', fontweight='bold')
+axes[0, 1].grid(True, alpha=0.3)
+axes[0, 1].set_xlim(0, 10)
+axes[0, 1].set_ylim(0, 3_000_000)
+
+# Plot 3 (bottom-left): Boxplot - price by garage (categorical)
+axes[1, 0].scatter(df['sqft'], df['price'], alpha=0.5, s=50)
+axes[1, 0].set_xlabel('Square Feet', fontsize=11)
+axes[1, 0].set_ylabel('Price ($)', fontsize=11)
+axes[1, 0].set_title('Price vs Square Footage', fontweight='bold')
+axes[1, 0].grid(True, alpha=0.3)
+axes[1, 0].set_xlim(0, 15_000)
+axes[1, 0].set_ylim(0, 4_000_000)
+
+# Plot 4 (bottom-right): Boxplot - price by city (categorical)
+sub_df = df[df['city'].isin(['lindon', 'orem', 'provo', 'spanish-fork'])]
+sub_df.boxplot(column='price', by='city', ax=axes[1, 1])
+axes[1, 1].set_xlabel('City', fontsize=11)
+axes[1, 1].set_ylabel('Price ($)', fontsize=11)
+axes[1, 1].set_title('Price by City', fontweight='bold')
+axes[1, 1].get_figure().suptitle('')  # remove automatic title from boxplot
+axes[1, 1].set_ylim(0, 2_500_000)
+
+plt.tight_layout()
+plt.show()
+```
+
+
+## Link to Streamlit App
+
+_TODO: Add a link to Streamlit
+
+
+## Analysis
+
+```{python}
+#| message: false
+#| warning: false
+
+# Import necessary modules
+import itertools
+import numpy as np
+import pandas as pd
+import statsmodels.formula.api as smf
+from patsy import dmatrices
+from sklearn.model_selection import KFold
+from sklearn.linear_model import LinearRegression, LassoCV, Lasso
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import mean_squared_error
+
+# -----------------------------
+# Treat ONLY city and zipcode as categorical
+# -----------------------------
+cat_vars = ['city', 'zipcode']
+for c in cat_vars:
+    if c in df.columns:
+        df[c] = df[c].astype('category')
+
+# Candidate predictors
+candidates = [c for c in df.columns if c != 'price']
+
+# -----------------------------
+# Best subsets selection via AIC
+# -----------------------------
+best_aic = np.inf
+best_formula = None
+best_model = None
+
+for k in range(1, len(candidates) + 1):
+    for subset in itertools.combinations(candidates, k):
+        terms = [f"C({v})" if v in cat_vars else v for v in subset]
+        formula = "price ~ " + " + ".join(terms)
+        try:
+            model = smf.ols(formula, data=df).fit()
+            if model.aic < best_aic:
+                best_aic = model.aic
+                best_formula = formula
+                best_model = model
+        except Exception:
+            continue
+
+print("\n==============================")
+print("BEST SUBSETS (AIC) MODEL")
+print("==============================")
+print("Best AIC:", best_aic)
+print("Best formula:", best_formula)
+print(best_model.summary())
+
+# -----------------------------
+# CV PMSE for Best-AIC model
+# -----------------------------
+y_aic, X_aic = dmatrices(best_formula, data=df, return_type='dataframe')
+y_aic = np.ravel(y_aic)
+
+kf = KFold(n_splits=5, shuffle=True, random_state=1)
+mses_aic = []
+
+for tr, te in kf.split(X_aic):
+    lr = LinearRegression(fit_intercept=False)
+    lr.fit(X_aic.iloc[tr], y_aic[tr])
+    preds = lr.predict(X_aic.iloc[te])
+    mses_aic.append(mean_squared_error(y_aic[te], preds))
+
+pmse_aic = np.mean(mses_aic)
+
+# -----------------------------
+# LASSO (lambda = 1 SE rule)
+# -----------------------------
+# Build full design matrix with dummies
+full_formula = "price ~ " + " + ".join(
+    [f"C({v})" if v in cat_vars else v for v in candidates]
+)
+
+y_lasso, X_lasso = dmatrices(full_formula, data=df, return_type='dataframe')
+y_lasso = np.ravel(y_lasso)
+
+# LASSO with standardization
+lasso_cv = Pipeline([
+    ("scaler", StandardScaler()),
+    ("lasso", LassoCV(cv=5, random_state=1))
+])
+
+lasso_cv.fit(X_lasso, y_lasso)
+
+# Lambda_1se
+mse_path = lasso_cv.named_steps["lasso"].mse_path_.mean(axis=1)
+mse_std = lasso_cv.named_steps["lasso"].mse_path_.std(axis=1)
+idx_min = np.argmin(mse_path)
+mse_1se = mse_path[idx_min] + mse_std[idx_min]
+idx_1se = np.where(mse_path <= mse_1se)[0][-1]
+
+alpha_1se = lasso_cv.named_steps["lasso"].alphas_[idx_1se]
+
+# Fit LASSO at lambda_1se
+lasso_1se = Pipeline([
+    ("scaler", StandardScaler()),
+    ("lasso", Lasso(alpha=alpha_1se))
+])
+
+lasso_1se.fit(X_lasso, y_lasso)
+
+# Selected variables
+coef = lasso_1se.named_steps["lasso"].coef_
+selected = X_lasso.columns[coef != 0]
+
+print("\n==============================")
+print("LASSO SELECTED VARIABLES (λ_1se)")
+print("==============================")
+print(list(selected))
+
+# -----------------------------
+# Refit OLS using LASSO-selected variables (FIXED)
+# -----------------------------
+
+selected_cols = X_lasso.columns[coef != 0]
+
+# Recover original variable names
+selected_vars = set()
+
+for col in selected_cols:
+    if col.startswith("C("):
+        # categorical: extract variable name inside C(...)
+        var = col.split("[")[0]          # C(city)
+        var = var.replace("C(", "").replace(")", "")
+        selected_vars.add(f"C({var})")
+    else:
+        selected_vars.add(col)
+
+selected_vars = sorted(selected_vars)
+
+print("\nVariables used in LASSO refit:")
+print(selected_vars)
+
+lasso_formula = "price ~ " + " + ".join(selected_vars)
+lasso_refit = smf.ols(lasso_formula, data=df).fit()
+
+print("\n==============================")
+print("OLS REFIT USING LASSO VARIABLES")
+print("==============================")
+print(lasso_refit.summary())
+
+# -----------------------------
+# CV PMSE for LASSO-selected model
+# -----------------------------
+y_lasso2, X_lasso2 = dmatrices(lasso_formula, data=df, return_type='dataframe')
+y_lasso2 = np.ravel(y_lasso2)
+
+mses_lasso = []
+for tr, te in kf.split(X_lasso2):
+    lr = LinearRegression(fit_intercept=False)
+    lr.fit(X_lasso2.iloc[tr], y_lasso2[tr])
+    preds = lr.predict(X_lasso2.iloc[te])
+    mses_lasso.append(mean_squared_error(y_lasso2[te], preds))
+
+pmse_lasso = np.mean(mses_lasso)
+
+# -----------------------------
+# Final comparison
+# -----------------------------
+print("\n==============================")
+print("CROSS-VALIDATED PMSE COMPARISON")
+print("==============================")
+print(f"Best Subsets (AIC) PMSE : {pmse_aic:.3f}")
+print(f"LASSO (1SE) PMSE        : {pmse_lasso:.3f}")
+```
+```{python}
+#| warning: false
+
+# Import necessary modules
+import itertools
+import numpy as np
+import pandas as pd
+import statsmodels.formula.api as smf
+from patsy import dmatrices, dmatrix
+from sklearn.model_selection import KFold
+from sklearn.linear_model import LinearRegression, LassoCV, Lasso
+from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+
+# -----------------------------
+# Treat ONLY these as categorical
+# -----------------------------
+cat_vars = ['city', 'zipcode']   # garage REMOVED → treated as continuous
+for c in cat_vars:
+    if c in df.columns:
+        df[c] = df[c].astype('category')
+
+# Candidate predictors: all columns except response
+candidates = [c for c in df.columns if c != 'price']
+
+# -----------------------------
+# Exhaustive best-subsets AIC
+# -----------------------------
+best_aic = np.inf
+best_formula = None
+best_model = None
+
+for k in range(1, len(candidates) + 1):
+    for subset in itertools.combinations(candidates, k):
+        terms = [f"C({v})" if v in cat_vars else v for v in subset]
+        formula = "price ~ " + " + ".join(terms)
+        try:
+            model = smf.ols(formula, data=df).fit()
+            if model.aic < best_aic:
+                best_aic = model.aic
+                best_formula = formula
+                best_model = model
+        except Exception:
+            continue
+
+# -----------------------------
+# AIC model summary
+# -----------------------------
+print("\n===== Best Subsets (AIC) Model =====")
+print("Best AIC:", best_aic)
+print("Best formula:", best_formula)
+print(best_model.summary())
+
+# -----------------------------
+# CV PMSE for AIC-selected model
+# -----------------------------
+y_aic, X_aic = dmatrices(best_formula, data=df, return_type='dataframe')
+y_aic = np.ravel(y_aic)
+
+kf = KFold(n_splits=5, shuffle=True, random_state=1)
+mses_aic = []
+
+for train_idx, test_idx in kf.split(X_aic):
+    X_train, X_test = X_aic.iloc[train_idx], X_aic.iloc[test_idx]
+    y_train, y_test = y_aic[train_idx], y_aic[test_idx]
+
+    lr = LinearRegression(fit_intercept=False)
+    lr.fit(X_train, y_train)
+    preds = lr.predict(X_test)
+    mses_aic.append(mean_squared_error(y_test, preds))
+
+pmse_aic = np.mean(mses_aic)
+
+# -----------------------------
+# LASSO with lambda_1se
+# -----------------------------
+# Full design matrix (same encoding logic)
+formula_full = "price ~ " + " + ".join(
+    [f"C({v})" if v in cat_vars else v for v in candidates]
+)
+
+y_lasso, X_lasso = dmatrices(formula_full, data=df, return_type='dataframe')
+y_lasso = np.ravel(y_lasso)
+
+# Remove intercept column for LASSO (handled internally)
+X_lasso = X_lasso.loc[:, X_lasso.columns != 'Intercept']
+
+# Pipeline: standardize → LASSO CV
+lasso_cv = LassoCV(
+    cv=5,
+    n_alphas=100,
+    random_state=1
+)
+
+pipe = Pipeline([
+    ("scaler", StandardScaler()),
+    ("lasso", lasso_cv)
+])
+
+pipe.fit(X_lasso, y_lasso)
+
+# Lambda_1se rule
+mse_path = lasso_cv.mse_path_.mean(axis=1)
+mse_std = lasso_cv.mse_path_.std(axis=1)
+idx_min = np.argmin(mse_path)
+mse_1se = mse_path[idx_min] + mse_std[idx_min]
+
+idx_1se = np.where(mse_path <= mse_1se)[0][-1]
+alpha_1se = lasso_cv.alphas_[idx_1se]
+
+# Fit final LASSO at lambda_1se
+lasso_1se = Pipeline([
+    ("scaler", StandardScaler()),
+    ("lasso", Lasso(alpha=alpha_1se))
+])
+lasso_1se.fit(X_lasso, y_lasso)
+
+# -----------------------------
+# LASSO summary
+# -----------------------------
+coef = pd.Series(
+    lasso_1se.named_steps["lasso"].coef_,
+    index=X_lasso.columns
+)
+
+print("\n===== LASSO Model (lambda_1se) =====")
+print("lambda_1se:", alpha_1se)
+print("Nonzero coefficients:")
+print(coef[coef != 0].sort_values())
+
+# -----------------------------
+# CV PMSE for LASSO
+# -----------------------------
+mses_lasso = []
+
+for train_idx, test_idx in kf.split(X_lasso):
+    X_train, X_test = X_lasso.iloc[train_idx], X_lasso.iloc[test_idx]
+    y_train, y_test = y_lasso[train_idx], y_lasso[test_idx]
+
+    lasso_1se.fit(X_train, y_train)
+    preds = lasso_1se.predict(X_test)
+    mses_lasso.append(mean_squared_error(y_test, preds))
+
+pmse_lasso = np.mean(mses_lasso)
+
+# -----------------------------
+# Comparison
+# -----------------------------
+print("\n===== Cross-Validation Comparison =====")
+print(f"AIC model PMSE:   {pmse_aic:.4f}")
+print(f"LASSO PMSE:       {pmse_lasso:.4f}")
+```
+```{python}
+# Import necessary modules
+import itertools
+import numpy as np
+import pandas as pd
+import statsmodels.formula.api as smf
+from patsy import dmatrices
+from sklearn.model_selection import KFold
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+# Treat these as categorical
+cat_vars = ['garage', 'city', 'zipcode']
+for c in cat_vars:
+    if c in df.columns:
+        df[c] = df[c].astype('category')
+
+# Candidate predictors: all columns except the response 'price'
+candidates = [c for c in df.columns if c != 'price']
+
+# Exhaustive best-subsets selection by AIC
+best_aic = np.inf
+best_formula = None
+best_model = None
+
+for k in range(1, len(candidates) + 1):
+    for subset in itertools.combinations(candidates, k):
+        # Build formula: wrap categorical predictors with C()
+        terms = [f"C({v})" if v in cat_vars else v for v in subset]
+        formula = "price ~ " + " + ".join(terms)
+        try:
+            model = smf.ols(formula, data=df).fit()
+            if model.aic < best_aic:
+                best_aic = model.aic
+                best_formula = formula
+                best_model = model
+        except Exception:
+            # Skip subsets that fail (e.g., perfect multicollinearity)
+            continue
+
+# Show best formula and statsmodels summary (similar to R)
+print("Best AIC:", best_aic)
+print("Best formula:", best_formula)
+print(best_model.summary())
+
+# Cross-validation PMSE for the selected design
+# Use patsy to create consistent design matrices (includes dummies for categorical)
+y, X = dmatrices(best_formula, data=df, return_type='dataframe')
+y = np.ravel(y)  # make 1d array
+
+# K-fold CV (adjust n_splits as desired)
+n_splits = 5
+kf = KFold(n_splits=n_splits, shuffle=True, random_state=1)
+mses = []
+for train_idx, test_idx in kf.split(X):
+    X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
+    y_train, y_test = y[train_idx], y[test_idx]
+    # Use sklearn linear model on the design matrix (patsy already included intercept)
+    lr = LinearRegression(fit_intercept=False)
+    lr.fit(X_train, y_train)
+    preds = lr.predict(X_test)
+    mses.append(mean_squared_error(y_test, preds))
+
+pmse = np.mean(mses)
+print(f"{n_splits}-fold CV PMSE:", pmse)
+```
+
+## Conclusion
 
 _TODO: Interpret the results, note limitations, and capture open questions or future experiments._

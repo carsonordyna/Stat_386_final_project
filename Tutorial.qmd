@@ -1,5 +1,5 @@
 ---
-title: "Getting Started"
+title: "Accessing the Data"
 jupyter: python3
 ---
 This tutorial demonstrates how to use the utah_housing_stat386 package to scrape, clean,
@@ -18,9 +18,15 @@ After installing, you'll also need to install [playwright](https://playwright.de
 to run the scraping functions.
 
 
-## Read in the data ##
+## Reading in the data ##
 
 Using the package's scraping functions `get_data` and `get_cleaned_data` are extremely memory intensive. Unless, dynamically updated data is required, it is highly recommended to use the functions `data_no_scrape` and `cleaned_static_data`, which are used to read in data that has been previously scraped (a process that took several hours). Details for using `get_data` and `get_cleaned_data` may be found on the `Documentation` page.
+
+```{python}
+#| include: false
+import sys
+sys.path.insert(0, "/Users/cromacair/Desktop/STAT 386/Final Project/Final_Project_Repo/src")
+```
 
 ```{python}
 # Import libraries
@@ -76,8 +82,7 @@ df_clean2 = remove_invalid_entries(df_clean2)
 df_clean2.head(10)
 ```
 
-
-## Analysis ##
+Perform some last cleaning steps:
 ```{python}
 import re
 
@@ -96,5 +101,6 @@ df
 ```
 
 
+The data is now ready for EDA and analysis (see the `Technical Report` page).
 
 
