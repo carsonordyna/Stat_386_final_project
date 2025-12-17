@@ -5,7 +5,7 @@ description: "Project summary, methodology, and findings placeholder"
 
 ## Executive Summary
 
-_TODO: Provide a concise overview of the project objectives, key findings, and actionable recommendations._
+_TODO: Provide a concise overview of the project objectives, key findings, and actionable recommendations ._
 
 ## Project Context
 
