@@ -123,6 +123,57 @@ Supported cities include:
 
 ***
 
+## **Data Cleaning**
+
+The package includes comprehensive data cleaning functions to transform raw scraped data into analysis-ready format.
+
+### **Quick Start with Cleaned Data**
+```python
+from utah_housing_stat386 import get_cleaned_data
+
+# Get cleaned data directly
+df_clean = get_cleaned_data(max_listings=10, output="pandas")
+print(df_clean.head())
+```
+
+### **Manual Cleaning Workflow**
+```python
+from utah_housing_stat386 import get_data, clean_housing_data, remove_duplicates, remove_invalid_rows
+
+# Get raw data
+df_raw = get_data(max_listings=10)
+
+# Apply cleaning step-by-step
+df_clean = clean_housing_data(df_raw)
+df_clean = remove_duplicates(df_clean)
+df_clean = remove_invalid_rows(df_clean)
+```
+
+### **Individual Cleaning Functions**
+```python
+from utah_housing_stat386 import clean_price, clean_lot_size, clean_agent
+
+# Clean specific fields
+df['price'] = df['price'].apply(clean_price)
+df['lot_size'] = df['lot_size'].apply(clean_lot_size)  # Converts to acres
+df['agent'] = df['agent'].apply(clean_agent)  # Removes contact info
+```
+
+### **Cleaning Functions Reference**
+
+| Function | Description | Example Input | Example Output |
+|----------|-------------|---------------|----------------|
+| `clean_price()` | Converts price strings to numeric | "$481,999" | 481999.0 |
+| `clean_numeric_field()` | Cleans beds, baths, sqft | "1,252" | 1252.0 |
+| `clean_year_built()` | Validates year built | "1919" | 1919 |
+| `clean_lot_size()` | Converts to acres | "0.10 Ac" | 0.1 |
+| `clean_garage()` | Extracts garage spaces | "2" | 2 |
+| `clean_agent()` | Removes contact info | "Contact Agent John Doe 801-555-1234" | "John Doe" |
+| `clean_city()` | Standardizes city names | "salt-lake-city" | "Salt Lake City" |
+| `clean_housing_data()` | Applies all cleaning | DataFrame | Cleaned DataFrame |
+| `remove_duplicates()` | Removes duplicate listings | DataFrame | Deduplicated DataFrame |
+| `remove_invalid_rows()` | Removes rows with missing critical data | DataFrame | Filtered DataFrame |
+
 ## **License**
 
 MIT 2025
