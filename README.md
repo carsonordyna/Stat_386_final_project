@@ -55,7 +55,8 @@ The package's web scraper uses **Playwright** for browser automation and easy in
     │       ├── core.py
     │       ├── cleaning.py
     │       ├── demo.py
-    │       └── data/
+    │       ├── data/
+    │       └── streamlit_app.py
     ├── tests/
     │   ├── package_test.py
     │   ├── test_cleaning.py
