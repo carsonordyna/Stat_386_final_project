@@ -1,0 +1,93 @@
+[
+  {
+    "objectID": "TechnicalReport.html",
+    "href": "TechnicalReport.html",
+    "title": "Technical Report",
+    "section": "",
+    "text": "TODO: Provide a concise overview of the project objectives, key findings, and actionable recommendations ."
+  },
+  {
+    "objectID": "TechnicalReport.html#executive-summary",
+    "href": "TechnicalReport.html#executive-summary",
+    "title": "Technical Report",
+    "section": "",
+    "text": "TODO: Provide a concise overview of the project objectives, key findings, and actionable recommendations ."
+  },
+  {
+    "objectID": "TechnicalReport.html#project-context",
+    "href": "TechnicalReport.html#project-context",
+    "title": "Technical Report",
+    "section": "Project Context",
+    "text": "Project Context\nTODO: Describe the motivation, stakeholders, and success criteria for this analysis."
+  },
+  {
+    "objectID": "TechnicalReport.html#data-sources",
+    "href": "TechnicalReport.html#data-sources",
+    "title": "Technical Report",
+    "section": "Data Sources",
+    "text": "Data Sources\n\nPrimary dataset: Salt_Lake_City_Water_Quality_Data.csv and utah_housing_data.csv\nSupplementary data: TODO - describe any external references\nData access notes: To retrieve this data is quite time consuming. Best to do the demo."
+  },
+  {
+    "objectID": "TechnicalReport.html#methodology",
+    "href": "TechnicalReport.html#methodology",
+    "title": "Technical Report",
+    "section": "Methodology",
+    "text": "Methodology\n\nData acquisition: TODO - outline collection scripts/APIs\nCleaning pipeline: TODO - summarize transformations and validations implemented\nAnalysis workflow: TODO - describe statistical or modeling techniques\nTooling: TODO - list packages, environments, and reproducibility steps"
+  },
+  {
+    "objectID": "TechnicalReport.html#results-diagnostics",
+    "href": "TechnicalReport.html#results-diagnostics",
+    "title": "Technical Report",
+    "section": "Results & Diagnostics",
+    "text": "Results & Diagnostics\nTODO: Summarize the main metrics, charts, or model diagnostics produced. Include links to figures or tables once available."
+  },
+  {
+    "objectID": "TechnicalReport.html#discussion-next-steps",
+    "href": "TechnicalReport.html#discussion-next-steps",
+    "title": "Technical Report",
+    "section": "Discussion & Next Steps",
+    "text": "Discussion & Next Steps\nTODO: Interpret the results, note limitations, and capture open questions or future experiments."
+  },
+  {
+    "objectID": "Documentation.html",
+    "href": "Documentation.html",
+    "title": "Documentation",
+    "section": "",
+    "text": "Functions:"
+  },
+  {
+    "objectID": "Tutorial.html",
+    "href": "Tutorial.html",
+    "title": "Getting Started",
+    "section": "",
+    "text": "This tutorial demonstrates how to use the utah_housing_stat386 package to scrape, clean, and analyze Utah housing data from UtahRealEstate.com. The package provides tools to collect data from cities in Utah County and Salt Lake County."
+  },
+  {
+    "objectID": "Tutorial.html#installation",
+    "href": "Tutorial.html#installation",
+    "title": "Getting Started",
+    "section": "Installation",
+    "text": "Installation\nThe first things that you will need to do is install the utah_housing_stat386 package. pip install utah-housing-stat386\nimport utah_housing as\nAfter installing, you’ll also need to install playwright browers to run the scraping functions.\nThis package includes a demo datset that you can use so that you can start exploring the data immediately!\nfrom utah_housing_stat386 import demo_data\n\n#load the demo dataset\n\ndf = load_demo_data()\n\n#Display the basic information of the dataset\n\nprint(f\"Dataset Shape: {df.shape}\")\nprint(f\"\\nDataset Columns: {df.columns}\")\nprint(f\"\\nDataset Description: \\n{df.describe()}\")\nprint(f\"\\nFirst few rows: \\n{df.head()}\")"
+  },
+  {
+    "objectID": "Tutorial.html#understanding-the-data",
+    "href": "Tutorial.html#understanding-the-data",
+    "title": "Getting Started",
+    "section": "Understanding the Data",
+    "text": "Understanding the Data\nTo understand the datatypes that we can, you can run\nprint(\"Data Types:\"\nprint(df.dtypes())\n\nprint(\"\\nSummary Statistics:\")\ndf.describe()"
+  },
+  {
+    "objectID": "tests/test.html",
+    "href": "tests/test.html",
+    "title": "Utah Housing Data Package - STAT 386",
+    "section": "",
+    "text": "from utah_housing_stat386 import get_data\n\n\nimport nest_asyncio\nnest_asyncio.apply()\n\nimport pandas as pd\n\ndf = get_data(max_listings=5, cities = ['provo'], output=\"pandas\")\nprint(df.head())\n\n\n[crawlee.crawlers._playwright._playwright_crawler] INFO  Current request statistics:\n\n┌───────────────────────────────┬──────┐\n\n│ requests_finished             │ 0    │\n\n│ requests_failed               │ 0    │\n\n│ retry_histogram               │ [0]  │\n\n│ request_avg_failed_duration   │ None │\n\n│ request_avg_finished_duration │ None │\n\n│ requests_finished_per_minute  │ 0    │\n\n│ requests_failed_per_minute    │ 0    │\n\n│ request_total_duration        │ 0s   │\n\n│ requests_total                │ 0    │\n\n│ crawler_runtime               │ 0s   │\n\n└───────────────────────────────┴──────┘\n\n[crawlee.crawlers._playwright._playwright_crawler] INFO  Crawled 0/24 pages, 0 failed requests, desired concurrency 3.\n\n[crawlee._autoscaling.autoscaled_pool] INFO  current_concurrency = 0; desired_concurrency = 3; cpu = 0.0; mem = 0.0; event_loop = 0.382; client_info = 0.0\n\n[crawlee.crawlers._playwright._playwright_crawler] INFO  Crawled 0/24 pages, 0 failed requests, desired concurrency 3.\n\n[crawlee.crawlers._playwright._playwright_crawler] WARN  Retrying request to https://www.utahrealestate.com/provo-homes due to: Creating a new page with plugin &lt;crawlee.browsers._playwright_browser_plugin.PlaywrightBrowserPlugin object at 0x10c9f5c10&gt; timed out.,  File \"/Users/cromacair/Desktop/STAT 386/Final Project/Final_Project_Repo/.venv/lib/python3.11/site-packages/playwright/_impl/_connection.py\", line 123, in _inner_send,     done, _ = await asyncio.wait(\n\n[crawlee.crawlers._playwright._playwright_crawler] INFO  Crawled 0/24 pages, 0 failed requests, desired concurrency 4.\n\n[crawlee.crawlers._playwright._playwright_crawler] INFO  Crawled 0/24 pages, 0 failed requests, desired concurrency 5.\n\n[crawlee.crawlers._playwright._playwright_crawler] INFO  Crawled 1/29 pages, 0 failed requests, desired concurrency 5.\n\n[crawlee.crawlers._playwright._playwright_crawler] INFO  Crawled 1/29 pages, 0 failed requests, desired concurrency 5.\n\n[crawlee._autoscaling.snapshotter] WARN  Memory is critically overloaded. Using 1.94 GB of 2.00 GB (97%). Consider increasing available memory.\n\n[crawlee.crawlers._playwright._playwright_crawler] INFO  Current request statistics:\n\n┌───────────────────────────────┬────────┐\n\n│ requests_finished             │ 1      │\n\n│ requests_failed               │ 0      │\n\n│ retry_histogram               │ [0, 1] │\n\n│ request_avg_failed_duration   │ None   │\n\n│ request_avg_finished_duration │ 15.65s │\n\n│ requests_finished_per_minute  │ 1      │\n\n│ requests_failed_per_minute    │ 0      │\n\n│ request_total_duration        │ 15.65s │\n\n│ requests_total                │ 1      │\n\n│ crawler_runtime               │ 60.00s │\n\n└───────────────────────────────┴────────┘\n\n[crawlee.crawlers._playwright._playwright_crawler] INFO  Crawled 1/29 pages, 0 failed requests, desired concurrency 5.\n\n[crawlee._autoscaling.autoscaled_pool] INFO  current_concurrency = 5; desired_concurrency = 5; cpu = 0.0; mem = 0.291; event_loop = 0.024; client_info = 0.0\n\n[crawlee._autoscaling.snapshotter] WARN  Memory is critically overloaded. Using 2.08 GB of 2.00 GB (104%). Consider increasing available memory.\n\n[crawlee.crawlers._playwright._playwright_crawler] INFO  Crawled 1/29 pages, 0 failed requests, desired concurrency 4.\n\n[crawlee._autoscaling.autoscaled_pool] INFO  Waiting for remaining tasks to finish\n\n[crawlee.crawlers._playwright._playwright_crawler] INFO  Error analysis: total_errors=1 unique_errors=1\n\n[crawlee.crawlers._playwright._playwright_crawler] INFO  Final request statistics:\n\n┌───────────────────────────────┬────────────┐\n\n│ requests_finished             │ 6          │\n\n│ requests_failed               │ 0          │\n\n│ retry_histogram               │ [5, 1]     │\n\n│ request_avg_failed_duration   │ None       │\n\n│ request_avg_finished_duration │ 37.07s     │\n\n│ requests_finished_per_minute  │ 5          │\n\n│ requests_failed_per_minute    │ 0          │\n\n│ request_total_duration        │ 3min 42.4s │\n\n│ requests_total                │ 6          │\n\n│ crawler_runtime               │ 1min 18.6s │\n\n└───────────────────────────────┴────────────┘\n\n\n\n\n       mls     price                         address beds baths  sqft  \\\n0  2123494  $481,999    615 E 420 N, Provo, UT 84606    4     2  1252   \n1  2124209  $300,000    751 S 400 W, Provo, UT 84601    4     3  1922   \n2  2124187  $469,000   1051 E 300 N, Provo, UT 84606    3     2  1272   \n3  2123875  $350,000    126 S 700 W, Provo, UT 84601    5     3  2636   \n4  2123462  $553,300  1587 N 3190 W, Provo, UT 84601    3     3  2068   \n\n  year_built lot_size   garage  \\\n0       1919  0.10 Ac        0   \n1       1894  0.15 Ac            \n2       1961  0.22 Ac  2124187   \n3       1919  0.16 Ac        4   \n4       2025  0.07 Ac  2123462   \n\n                                               agent   city  \n0  Contact Agent Samuel Brinton 801-583-2020 Your...  provo  \n1  Contact Agent Tawna Marsh 801-636-5268 Your Na...  provo  \n2  Contact Agent Tiffany Fletcher 801-800-6365 Yo...  provo  \n3  Contact Agent Cody Thorup 385-695-8382 Your Na...  provo  \n4  Contact Agent C Terry Clark 801-550-0903 Your ...  provo  \n\n\n\ndf\n\n\n\n\n\n\n\n\nmls\nprice\naddress\nbeds\nbaths\nsqft\nyear_built\nlot_size\ngarage\nagent\ncity\n\n\n\n\n0\n2123494\n$481,999\n615 E 420 N, Provo, UT 84606\n4\n2\n1252\n1919\n0.10 Ac\n0\nContact Agent Samuel Brinton 801-583-2020 Your...\nprovo\n\n\n1\n2124209\n$300,000\n751 S 400 W, Provo, UT 84601\n4\n3\n1922\n1894\n0.15 Ac\n\nContact Agent Tawna Marsh 801-636-5268 Your Na...\nprovo\n\n\n2\n2124187\n$469,000\n1051 E 300 N, Provo, UT 84606\n3\n2\n1272\n1961\n0.22 Ac\n2124187\nContact Agent Tiffany Fletcher 801-800-6365 Yo...\nprovo\n\n\n3\n2123875\n$350,000\n126 S 700 W, Provo, UT 84601\n5\n3\n2636\n1919\n0.16 Ac\n4\nContact Agent Cody Thorup 385-695-8382 Your Na...\nprovo\n\n\n4\n2123462\n$553,300\n1587 N 3190 W, Provo, UT 84601\n3\n3\n2068\n2025\n0.07 Ac\n2123462\nContact Agent C Terry Clark 801-550-0903 Your ...\nprovo"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Utah Housing Data Package",
+    "section": "",
+    "text": "Wasatch Mountains\n\n\nDocumentation can be found here.\nHere is a simple tutorial that you can follow along with here.\nReview the technical report."
+  }
+]
