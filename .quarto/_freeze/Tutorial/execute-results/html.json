@@ -1,0 +1,12 @@
+{
+  "hash": "71afe6cdf0234db27532fc33cc37e42a",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: Getting Started\n---\n\nThis tutorial demonstrates how to use the utah_housing_stat386 package to scrape, clean,\nand analyze Utah housing data from UtahRealEstate.com.\nThe package provides tools to collect data from cities in Utah County and Salt Lake County.\n\n## Installation ##\n*The first things that you will need to do is install the utah_housing_stat386 package.*\npip install utah-housing-stat386\n\n```bash\nimport utah_housing as\n```\nAfter installing, you'll also need to install [playwright](https://playwright.dev/python/docs/intro) browers\nto run the scraping functions.\n\nThis package includes a demo datset that you can use so that you can start exploring the data immediately!\n\n```python\nfrom utah_housing_stat386 import demo_data\n\n#load the demo dataset\n\ndf = load_demo_data()\n\n#Display the basic information of the dataset\n\nprint(f\"Dataset Shape: {df.shape}\")\nprint(f\"\\nDataset Columns: {df.columns}\")\nprint(f\"\\nDataset Description: \\n{df.describe()}\")\nprint(f\"\\nFirst few rows: \\n{df.head()}\")\n```\n\n## Understanding the Data ##\nTo understand the datatypes that we can, you can run\n\n```python\nprint(\"Data Types:\"\nprint(df.dtypes())\n\nprint(\"\\nSummary Statistics:\")\ndf.describe()\n\n```\n\n",
+    "supporting": [
+      "Tutorial_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

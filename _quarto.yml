@@ -3,8 +3,9 @@ project:
   output-dir: docs
 
 website:
-  title: "Stat 386 Final Project"
+  title: "Utah Housing Data Package - STAT 386"
   navbar:
+    background: primary
     left:
       - href: index.qmd
         text: Home
@@ -17,11 +18,11 @@ website:
 
 format:
   html:
-    theme:
-      - cosmo
-      - brand
-    css: styles.css
+    theme: cosmo
     toc: true
+    code-fold: false
+    code-tools: true
+    css: styles.css
 
 
 
