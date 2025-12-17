@@ -12,7 +12,7 @@ from utah_housing_stat386.cleaning import (
 )
 from utah_housing_stat386.demo import load_demo_data, demo_cleaning, run_demo
 
-__version__ = "0.2.1"
+__version__ = "0.3.2"
 
 __all__ = [
     "get_data",

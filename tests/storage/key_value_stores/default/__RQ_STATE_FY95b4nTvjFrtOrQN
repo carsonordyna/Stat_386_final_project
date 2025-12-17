@@ -1,0 +1,12 @@
+{
+  "sequence_counter": 3,
+  "forefront_sequence_counter": 0,
+  "forefront_requests": {},
+  "regular_requests": {
+    "https://www.utahrealestate.com/provo-homes": 2
+  },
+  "in_progress_requests": [],
+  "handled_requests": [
+    "https://www.utahrealestate.com/provo-homes"
+  ]
+}

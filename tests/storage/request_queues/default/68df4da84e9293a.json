@@ -1,0 +1,16 @@
+{
+  "unique_key": "https://www.utahrealestate.com/provo-homes",
+  "url": "https://www.utahrealestate.com/provo-homes",
+  "method": "GET",
+  "payload": null,
+  "headers": {},
+  "user_data": {
+    "__crawlee": {
+      "state": 5
+    }
+  },
+  "retry_count": 2,
+  "no_retry": false,
+  "loaded_url": null,
+  "handled_at": "2025-12-17 06:14:17.213044+00:00"
+}

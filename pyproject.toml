@@ -4,18 +4,16 @@ build-backend = "hatchling.build"
 
 [project]
 name = "utah_housing_stat386"
-version = "0.3.0"  # Increment version for TestPyPI
+version = "0.3.2"  # Increment version for TestPyPI
 description = "A package to scrape Utah housing data for certain cities of Salt Lake and Utah counties"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.12"
 license = { text = "MIT" }
 authors = [
     { name = "Seth Frandsen, Carson Ordyna" }
 ]
 classifiers = [
-    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
@@ -43,6 +41,7 @@ Issues = "https://github.com/sethfrand/Stat_386_final_project/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/utah_housing_stat386"]
+# packages = ["utah_housing_stat386"]
 
 # [tool.hatch.build.targets.wheel.force-include]
 # "src/utah_housing_stat386/data" = "utah_housing_stat386/data"
