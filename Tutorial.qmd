@@ -9,7 +9,7 @@ The package provides tools to collect data from cities in Utah County and Salt L
 ## Installation ##
 *The first things that you will need to do is install the utah_housing_stat386 package.*
 
-```{bash}
+```bash
 pip install utah-housing-stat386
 ```
 
