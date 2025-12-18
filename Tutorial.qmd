@@ -20,13 +20,6 @@ to run the scraping functions.
 Using the package's scraping functions `get_data` and `get_cleaned_data` are extremely memory intensive. Unless, dynamically updated data is required, it is highly recommended to use the functions `data_no_scrape` and `cleaned_static_data`, which are used to read in data that has been previously scraped (a process that took several hours). Details for using `get_data` and `get_cleaned_data` may be found on the `Documentation` page.
 
 ```{python}
-#| include: false
-#| eval: false
-import sys
-sys.path.insert(0, "/Users/cromacair/Desktop/STAT 386/Final Project/Final_Project_Repo/src")
-```
-
-```{python}
 # Import libraries
 import pandas as pd
 import numpy as np

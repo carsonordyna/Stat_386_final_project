@@ -38,12 +38,6 @@ Some key goals of this project were (1) to produce clear exploratory analyses th
 
 ```{python}
 #| include: false
-#| eval: false
-import sys
-sys.path.insert(0, "/Users/cromacair/Desktop/STAT 386/Final Project/Final_Project_Repo/src")
-```
-```{python}
-#| include: false
 import pandas as pd
 from utah_housing_stat386.cleaning import data_no_scape, cleaned_static_data, clean_housing_data, remove_duplicates, remove_invalid_entries
 import re
