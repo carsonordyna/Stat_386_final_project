@@ -4,10 +4,10 @@ build-backend = "hatchling.build"
 
 [project]
 name = "utah_housing_stat386"
-version = "0.3.3"  # Increment version for TestPyPI
+version = "0.3.4"  # Increment version for TestPyPI
 description = "A package to scrape Utah housing data for certain cities of Salt Lake and Utah counties"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [
     { name = "Seth Frandsen, Carson Ordyna" }
