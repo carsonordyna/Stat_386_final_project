@@ -111,7 +111,7 @@ plt.show()
 
 ## Link to Streamlit App
 
-[Link to Streamlit app](https://stat386finalproject-seth-carson.streamlit.app/)
+[Link to Streamlit app](https://stat386finalproject-seth-carson-4.streamlit.app/)
 
 
 ## Analysis
